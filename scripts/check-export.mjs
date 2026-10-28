@@ -1,0 +1,10 @@
+import { readFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import { validateData } from '../planner/core.mjs';
+const html=await readFile(process.argv[2],'utf8');
+const data=validateData(JSON.parse(html.match(/<script id="planner-data" type="application\/json">([\s\S]*?)<\/script>/)[1]));
+for(const match of html.matchAll(/<script>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
+assert.notEqual(data.workspaceId,'wiz-local-v1');
+assert.deepEqual(validateData(JSON.parse(JSON.stringify(data))),data);
+console.log(`Export verified: ${data.tasks.length} tasks, ${data.milestones.length} milestones; independent workspace ID; valid references and dates; JavaScript parses.`);
