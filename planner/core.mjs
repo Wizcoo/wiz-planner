@@ -25,7 +25,7 @@ export function validateData(input) {
   for (const m of d.members) if (!string(m.name,60) || !string(m.role,80) || !color(m.color)) fail('成员名称、角色或颜色');
   for (const t of d.tasks) {
     if (!string(t.title) || !ids.projects.has(t.projectId) || !ids.members.has(t.assigneeId)) fail('任务名称、项目或负责人');
-    if (!validDate(t.startDate) || !validDate(t.endDate) || t.startDate>t.endDate || (t.deadline && !validDate(t.deadline))) fail('任务日期');
+    if (!validDate(t.startDate) || !validDate(t.endDate) || t.startDate>t.endDate || (t.deadline != null && t.deadline !== '' && !validDate(t.deadline))) fail('任务日期');
     if (!['P0','P1','P2'].includes(t.priority) || !Object.hasOwn(STATUS,t.status) || !color(t.color)) fail('优先级、状态或颜色');
     if (!Number.isInteger(t.progress) || t.progress<0 || t.progress>100 || typeof t.description!=='string' || t.description.length>10000) fail('进度或备注');
     if (t.completedAt != null && !validDate(t.completedAt)) fail('完成日期');
