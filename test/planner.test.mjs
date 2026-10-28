@@ -26,6 +26,16 @@ test('import rejects invalid relationships, duplicate IDs, colors, status, prior
   }
   assert.deepEqual(d,createDemo('2026-10-28'));
 });
+test('import rejects non-date deadline values while preserving optional deadlines',()=>{
+  for(const deadline of [0,false,[],{},'2026-02-30']){
+    const data=createDemo('2026-10-28');data.tasks[0].deadline=deadline;
+    assert.throws(()=>validateData(data),/任务日期/,`Invalid deadline: ${JSON.stringify(deadline)}`);
+  }
+  for(const deadline of ['',null,undefined,'2026-10-30']){
+    const data=createDemo('2026-10-28');data.tasks[0].deadline=deadline;
+    assert.equal(validateData(data).tasks[0].deadline,deadline);
+  }
+});
 test('today includes deadlines before planned start, overdue work, extended work, and only today completions',()=>{
   const base=createDemo('2026-10-28').tasks[0];
   const tasks=[
